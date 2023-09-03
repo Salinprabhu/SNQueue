@@ -1,0 +1,60 @@
+﻿@page "/"
+@inject NavigationManager UriHelper
+@inject HttpClient Http
+
+<PageTitle>Index</PageTitle>
+
+<MudText Class="rounded mt-3" Typo="Typo.h6" Align="Align.Center"
+         Style="color:Green;font-weight:bold; font-size:2rem; background: #42275a;background: -webkit-linear-gradient(to right, rgba(255,0,0,0), rgba(255,0,0,1));background: linear-gradient(to right, rgba(255,0,0,0), rgba(255,0,0,1));">
+
+    <a>
+        MINISTRY OF HEALTH
+    </a>
+</MudText>
+<MudDivider></MudDivider>
+<MudText Class="rounded mt-4" Typo="Typo.h6" Align="Align.Center"
+         Style="color:#42275a; font-size:2rem; background: #42275a;background: -webkit-linear-gradient(to right, red , yellow);background: linear-gradient(to right, red , yellow);">
+    
+    <MudElement HtmlTag="marquee" Style="color:Green;font-weight:bold;font-size:1.5rem;  direction=left;">
+        KING ABDULLAH HOSPITAL - BISHA
+    </MudElement>
+</MudText>
+<MudText Class="rounded mt-3" Typo="Typo.h6" Align="Align.Center"
+         Style="color:orangered;font-weight:bold; font-size:1.6rem; background: rgb(2,0,36);;background: -webkit-linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);">
+
+    <a>
+        Please select the Department to View.!
+    </a>
+</MudText>
+
+<MudTextField @bind-Value="IDValue" Label="MRN Number" Variant="Variant.Outlined"></MudTextField>
+<MudButton OnClick="(()=>GetData())" Color="Color.Secondary">GetData</MudButton>
+
+@code{
+    [Inject] ISnackbar? Snackbar { get; set; }
+    string IDValue { get; set; } = "337931";
+    async void GetData()
+    {
+        try
+        {
+            await Task.Run(async () =>
+            {
+                string apiReq = $"api/PatData/GetDatas";
+                using (var response = await Http.GetAsync(apiReq))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonString = response.Content.ReadAsStringAsync().Result;
+                        Snackbar!.Add(jsonString, Severity.Success);
+                    }
+                }
+
+            });
+        }
+        catch (Exception ex)
+        {
+            Snackbar!.Add(ex.Message, Severity.Error);
+        }
+    
+    }
+}
