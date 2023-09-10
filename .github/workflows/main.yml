@@ -1,6 +1,6 @@
 name: CLI
 env:
-  PUBLISH_DIR: /SNQueue/SNQueue/SNQueue/Server/bin/Release/net7.0/publish/wwwroot
+  PUBLISH_DIR: publish/wwwroot
 on:
   push:
     branches: [ master ]
@@ -8,31 +8,22 @@ on:
     branches:
       - main
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Publish application
-      uses: actions/setup-dotnet@v1
+    - name: Install .NET Core SDK
+      uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 7.0.x
     - name: Install .NET WASM Build Tools
       run: dotnet workload install wasm-tools
     - name: Publish .NET Core Project
-      run: dotnet publish -c Release
-    - name: Rewrite base href
-      if: success()
-      uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
+      run: dotnet publish SNQueue.sln -c:Release -o:publish -p:GHPages=true
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        html_path: ${{ env.PUBLISH_DIR }}/index.html
-        base_href: BASE_URL or REPOSITORY_NAME
-    - name: Add .nojekyll file
-      run: touch ${{ env.PUBLISH_DIR }}/.nojekyll
-    - name: Commit to GitHub pages Repo
-      if: success()
-      uses: crazy-max/ghaction-github-pages@v1.5.1
-      with:
-        target_branch: gh-pages
-        build_dir: ${{ env.PUBLISH_DIR }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: publish/wwwroot
+        force_orphan: true
+    
