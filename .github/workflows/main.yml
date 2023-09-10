@@ -1,6 +1,6 @@
 name: CLI
 env:
-  PUBLISH_DIR: bin/Release/net7.0/publish/wwwroot
+  PUBLISH_DIR: /SNQueue/SNQueue/SNQueue/Server/bin/Release/net7.0/publish/wwwroot
 on:
   push:
     branches: [ master ]
