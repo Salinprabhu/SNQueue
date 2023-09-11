@@ -3,10 +3,10 @@ env:
   PUBLISH_DIR: publish/wwwroot
 on:
   push:
-    branches: [ master ]
+    branches: [ gh-pages ]
   pull_request:
     branches:
-      - main
+      - master
 jobs:
   deploy:
     runs-on: ubuntu-latest
