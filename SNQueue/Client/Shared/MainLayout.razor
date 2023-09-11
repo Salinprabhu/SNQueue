@@ -1,0 +1,51 @@
+﻿@inherits LayoutComponentBase
+@using SNQueue.Shared;
+@using static SNQueue.Shared.QClass;
+@inject NavigationManager NavManager
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+    <main>        
+        <article class="content px-1" style="padding-top:.1rem;">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code{
+    [Inject] ISnackbar? Snackbar { get; set; }
+    [Inject] IDialogService? DialogService { get; set; }
+    public bool IsOpen { get; set; } = true;
+
+
+    void OpenHome()
+    {
+        IsOpen = true;
+    }
+    void Reload()
+    {
+        try
+        {
+            NavManager.NavigateTo("/");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            StateHasChanged();
+            Snackbar!.Add(ex.Message, Severity.Info);
+        }
+    }
+    void OpenSites(Int32 Site)
+    {
+        try
+        {
+            NavManager.NavigateTo("qSiteView" + "?sID=" + Site);
+        }
+        catch (Exception ex)
+        {
+            Snackbar!.Add(ex.Message, Severity.Error);
+        }
+    }
+}

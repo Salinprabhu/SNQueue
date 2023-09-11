@@ -1,0 +1,92 @@
+﻿@page "/qSiteView"
+@page "/qSiteView/{SiteID:int}"
+@using SNQueue.Shared;
+@using static SNQueue.Shared.QClass;
+
+<MudGrid Style="z-index:1;width:100%; height:100%;" Spacing="1" Justify="Justify.Center">
+    <MudText Class="rounded" Typo="Typo.h6" Align="Align.Center"
+             Style="color:#18eaee;font-weight:bold; font-size:1.6rem; background: rgb(131,58,180);
+background: linear-gradient(11deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);;">
+
+    <a>
+         @WorkingSiteName
+    </a>
+</MudText>
+
+    <MudItem xs="12" Style="height:95vh;">
+        <iframe src="@SiteNames" name="iframe_a" height="100%" width="100%" title="Iframe Example"></iframe>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Inject] ISnackbar? Snackbar { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "sID")]
+    public int SiteID { get; set; } = 1;
+
+    public Int32? LastSite { get; set; } = 0;
+    //public string? LastSiteNames { get; set; } = "KING ABDULLAH HOSPITAL - REHAB";
+
+    public string? SiteNames { get; set; } = "https://localhost:5551/";
+
+    protected override Task OnParametersSetAsync()
+    {
+        if (LastSite != SiteID)
+        {
+            GetSiteName(SiteID);
+            LastSite = SiteID;
+        }
+        return base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() =>
+        {
+            GetSiteName(SiteID);
+            LastSite = SiteID;
+        });
+        await base.OnInitializedAsync();
+    }
+
+    async void GetSiteName(Int32? refSiteID)
+    {
+        try
+        {
+            await Task.Run(() =>
+            {
+                switch (refSiteID)
+                {
+                    case 1:
+                        SiteNames = "https://localhost:5551/";
+                        WorkingSiteName = "KING ABDULLAH HOSPITAL - REHAB";
+                        break;
+                    case 2:
+                        SiteNames = "https://localhost:5552/";
+                        WorkingSiteName = "KING ABDULLAH HOSPITAL - OPD1";
+                        break;
+                    case 3:
+                        SiteNames = "https://localhost:5553/";
+                        WorkingSiteName = "KING ABDULLAH HOSPITAL - OPD2";
+                        break;
+                    case 4:
+                        SiteNames = "https://localhost:5554/";
+                        WorkingSiteName = "KING ABDULLAH HOSPITAL - DIABETIC CENTER";
+                        break;
+                    case 5:
+                        SiteNames = "http://10.183.188.13:88/Login/Login";
+                        WorkingSiteName = "KING ABDULLAH HOSPITAL - OMS";
+                        break;
+                }
+            });
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            StateHasChanged();
+            Snackbar!.Add(ex.Message, Severity.Error);
+        }
+    }
+
+}
